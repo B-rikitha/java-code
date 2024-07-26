@@ -1,0 +1,138 @@
+import java.util.Scanner;
+
+class Seat {
+    private int seatNumber;
+    private boolean reserved;
+
+    public Seat(int seatNumber) {
+        this.seatNumber = seatNumber;
+        this.reserved = false;
+    }
+
+    public int getSeatNumber() {
+        return seatNumber;
+    }
+
+    public boolean isReserved() {
+        return reserved;
+    }
+
+    public void reserve() {
+        reserved = true;
+    }
+
+    public void unreserve() {
+        reserved = false;
+    }
+}
+
+class Theater {
+    private Seat[][] seats;
+
+    public Theater(int rows, int seatsPerRow) {
+        seats = new Seat[rows][seatsPerRow];
+        int seatNumber = 1;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < seatsPerRow; j++) {
+                seats[i][j] = new Seat(seatNumber++);
+            }
+        }
+    }
+
+    public void displaySeats() {
+        System.out.println("Current Seats Status:");
+        for (Seat[] row : seats) {
+            for (Seat seat : row) {
+                if (seat.isReserved()) {
+                    System.out.print("X ");
+                } else {
+                    System.out.print(seat.getSeatNumber() + " ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    public boolean reserveSeat(int seatNumber) {
+        for (Seat[] row : seats) {
+            for (Seat seat : row) {
+                if (seat.getSeatNumber() == seatNumber && !seat.isReserved()) {
+                    seat.reserve();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean unreserveSeat(int seatNumber) {
+        for (Seat[] row : seats) {
+            for (Seat seat : row) {
+                if (seat.getSeatNumber() == seatNumber && seat.isReserved()) {
+                    seat.unreserve();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+}
+
+public class OnlineReservationSystem {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter number of rows in the theater: ");
+        int rows = scanner.nextInt();
+        System.out.print("Enter number of seats per row in the theater: ");
+        int seatsPerRow = scanner.nextInt();
+
+        Theater theater = new Theater(rows, seatsPerRow);
+
+        boolean exit = false;
+
+        while (!exit) {
+            System.out.println("\nWelcome to the Online Reservation System");
+            System.out.println("1. View Available Seats");
+            System.out.println("2. Reserve a Seat");
+            System.out.println("3. Cancel Reservation");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    theater.displaySeats();
+                    break;
+                case 2:
+                    System.out.print("Enter seat number to reserve: ");
+                    int seatToReserve = scanner.nextInt();
+                    if (theater.reserveSeat(seatToReserve)) {
+                        System.out.println("Seat " + seatToReserve + " reserved successfully.");
+                    } else {
+                        System.out.println("Seat " + seatToReserve + " is already reserved or does not exist.");
+                    }
+                    break;
+                case 3:
+                    System.out.print("Enter seat number to cancel reservation: ");
+                    int seatToCancel = scanner.nextInt();
+                    if (theater.unreserveSeat(seatToCancel)) {
+                        System.out.println("Reservation for seat " + seatToCancel + " canceled successfully.");
+                    } else {
+                        System.out.println("Seat " + seatToCancel + " is not reserved or does not exist.");
+                    }
+                    break;
+                case 4:
+                    exit = true;
+                    System.out.println("Exiting the Online Reservation System. Goodbye!");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please enter a valid option.");
+                    break;
+            }
+        }
+
+        scanner.close();
+    }
+}
